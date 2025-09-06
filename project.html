@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎵 My Music Player</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: rgba(0,0,0,0.7);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    h1, h2, h3 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 10px;
+      margin: 5px 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    li:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    audio {
+      width: 100%;
+      margin-top: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border: none;
+    }
+    .fav-btn {
+      background: gold;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎶Rhythmic Tunes : Your Melodic Companion🎶</h1>
+    <h2>My Playlist 🎶</h2>
+
+    <!-- Search box -->
+    <input type="text" id="search" placeholder="Search songs..." onkeyup="filterSongs()">
+
+    <!-- Playlist -->
+    <ul id="playlist">
+      <li onclick="playSong('C://Users//sanju//Music//rhythmic tunes//songs//ed-sheeran-shape-of-you.mp3','Shape of You (Demo)')">
+        Shape of You 
+        <button class="fav-btn" onclick="addToFavorites(event, 'C://Users//sanju//Music//rhythmic tunes//songs//ed-sheeran-shape-of-you.mp3','Shape of You (Demo)')">⭐</button>
+      </li>
+      <li onclick="playSong('C://Users//sanju//Music//rhythmic tunes//songs//believer_song.mp3','Believer (Demo)')">
+        Believer
+        <button class="fav-btn" onclick="addToFavorites(event, 'C://Users//sanju//Music//rhythmic tunes//songs//believer_song.mp3','Believer (Demo)')">⭐</button>
+      </li>
+      <li onclick="playSong('C://Users//sanju//Music//rhythmic tunes//songs//die_with_a_smile.mp3','Die with a Smile (Demo)')">
+        Die with a Smile
+        <button class="fav-btn" onclick="addToFavorites(event, 'C://Users//sanju//Music//rhythmic tunes//songs//die_with_a_smile.mp3','Die with a Smile (Demo)')">⭐</button>
+      </li>
+      <li onclick="playSong('C://Users//sanju//Music//rhythmic tunes//songs//i_wanna_be_free.mp3','Wanna Be free (Demo)')">
+        Wanna Be Free
+        <button class="fav-btn" onclick="addToFavorites(event, 'C://Users//sanju//Music//rhythmic tunes//songs//i_wanna_be_free.mp3','Wanna Be free (Demo)')">⭐</button>
+      </li>
+      <li onclick="playSong('C://Users//sanju//Music//rhythmic tunes//songs//i_m_sorry_song_by_jk.mp3','I’m Sorry Don’t Leave')">
+        I’m Sorry Don’t Leave
+        <button class="fav-btn" onclick="addToFavorites(event, 'C://Users//sanju//Music//rhythmic tunes//songs//i_m_sorry_song_by_jk.mp3','I’m Sorry Don’t Leave')">⭐</button>
+      </li>
+    </ul>
+
+    <!-- Favorites Section -->
+    <h2>⭐ Favorites</h2>
+    <ul id="favorites"></ul>
+
+    <h3 id="nowPlaying">Now Playing: None</h3>
+    <audio id="audioPlayer" controls></audio>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="bgMusic" autoplay loop hidden>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/02/audio_9c29a2f80a.mp3?filename=background-music-116199.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    function playSong(file, title) {
+      const player = document.getElementById('audioPlayer');
+      player.src = file;
+      player.play();
+      document.getElementById('nowPlaying').innerText = "Now Playing: " + title;
+    }
+
+    function filterSongs() {
+      const input = document.getElementById('search').value.toLowerCase();
+      const songs = document.querySelectorAll('#playlist li');
+      songs.forEach(song => {
+        song.style.display = song.innerText.toLowerCase().includes(input) ? "" : "none";
+      });
+    }
+
+    function addToFavorites(event, file, title) {
+      event.stopPropagation(); // Prevent song from playing when clicking ⭐
+      const favList = document.getElementById('favorites');
+      
+      // Check if already exists
+      const exists = [...favList.children].some(li => li.dataset.file === file);
+      if (exists) {
+        alert(title + " is already in Favorites!");
+        return;
+      }
+
+      // Create new favorite item
+      const li = document.createElement('li');
+      li.innerText = title;
+      li.dataset.file = file;
+      li.onclick = () => playSong(file, title);
+      favList.appendChild(li);
+
+      saveFavorites(); // Save to localStorage
+    }
+
+    function saveFavorites() {
+      const favList = document.getElementById('favorites');
+      const favorites = [...favList.children].map(li => ({
+        file: li.dataset.file,
+        title: li.innerText
+      }));
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+
+    function loadFavorites() {
+      const saved = localStorage.getItem('favorites');
+      if (saved) {
+        const favorites = JSON.parse(saved);
+        const favList = document.getElementById('favorites');
+        favorites.forEach(fav => {
+          const li = document.createElement('li');
+          li.innerText = fav.title;
+          li.dataset.file = fav.file;
+          li.onclick = () => playSong(fav.file, fav.title);
+          favList.appendChild(li);
+        });
+      }
+    }
+
+    // Load favorites when page opens
+    window.onload = loadFavorites;
+  </script>
+</body>
+</html>
